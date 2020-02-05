@@ -1,0 +1,1 @@
+worker: python EU4IdeaBot.py
