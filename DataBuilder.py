@@ -1,8 +1,5 @@
 import re
-import json
 import ClauseWizard
-from ideaGroup import ideaGroup
-from modifiers import *
 
 tagFile = './common/country_tags/00_countries.txt'
 uniqueIdeasFile = ['./common/ideas/00_country_ideas.txt']

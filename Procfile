@@ -1,1 +1,1 @@
-worker: python ./EU4IdeaBot.py
+worker: python EU4IdeaBot.py
