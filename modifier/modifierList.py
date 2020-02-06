@@ -144,7 +144,7 @@ class ModifierList(Enum):
     range = ('PercentModifier', 'Colonial Range')
     global_colonial_growth = ('IntegerModifier', 'Global Settler Increase')
     ae_impact = ('PercentModifier', 'Aggressive Expansion Impact')
-    privateer_efficiency = ('PercentModifier', 'Privateer Ffficiency')
+    privateer_efficiency = ('PercentModifier', 'Privateer Efficiency')
     diplomatic_annexation_cost = ('PercentModifier', 'Diplomatic Annexation Cost')
     heavy_ship_cost = ('PercentModifier', 'Heavy Ship Cost')
     light_ship_cost = ('PercentModifier', 'Light Ship Cost')

@@ -7,6 +7,11 @@ from ideaGroup.ideaGroup import ideaGroup
 import mdFormatter as md
 import os
 
+LIMIT_PER_COMMENT = 2
+MAX_LIMIT = 4
+TESTING_SUB = "testingground4bots"
+PROD_SUB = "eu4"
+
 tagLib = gen_tag_library()
 IdeaLib = gen_country_ideas_library(tagLib)
 # shortcut for IdeaLib, so the program doesn't have to make a new ideaGroup object from scratch when one already exists.
@@ -31,55 +36,51 @@ def search_and_reply(reddit):
     '''
     look through the last 1000 comments for any query of national ideas: ex [[ prussia ]], then reply with the idea set
     '''
-    print("SEARCH: Searching last 1,000 comments...")
-    for comment in reddit.subreddit("eu4").comments(limit=1000):
+    print("SEARCH: Searching last 500 comments...")
+    for comment in reddit.subreddit("eu4gi").comments(limit=500):
         if not comment.author == "EU4IdeaBot" and \
                 is_request(comment.body) and not has_been_replied_to(str(comment.id)):
             reqs = re.findall(r"{(.*?)}", comment.body)
-            
-            if isinstance(reqs, list):
-                print(reqs)
-                tmp = []
-                for req in reqs:
-                    print('SEARCH: Request for "' + req.strip() + '" received!')
-                    try:
-                        countryIdea = fuzzySearch(req)
-                    except KeyError as e:
-                        # PM to my account when a modifier isn't in the list
-                        # change it so the bot recognizes previous comments and doesn't spam my inbox
-                        comment.reply("u/EU4IdeaBot has encountered an error. \n" +
-                                      "An error message with the details have been forwarded to the bot maintainer")
-                        reddit.redditor('professormadlib').message('EU4IdeaBot Error', str(e))
-                        return
-                    tmp.append(format_to_comment(countryIdea))
-                # unifies tmp items inside a single reply
-                response = ""
-                for i in tmp:
-                    response += i
-                    response += "\n___\n"
 
-                response = comment_footer(response)
-                try:
-                    comment.reply(response)
-                except praw.exceptions.APIException as e:
-                    print(e)
-                    print("reached comment limit, sleep for 10 minutes")
-                    time.sleep(600)
-            else:
-                print('SEARCH: Request for "' + reqs.strip() + '" received!')
-                countryIdea = fuzzySearch(reqs)
-                if not isinstance(countryIdea, ideaGroup):
-                    # error will show which modifier is missing
-                    response = str(countryIdea)
-                else:
-                    response = format_to_comment(countryIdea)
-                    response = comment_footer(response)
-                try:
-                    comment.reply(response)
-                except praw.exceptions.APIException as e:
-                    print(e)
-                    print("reached comment limit, sleep for 10 minutes")
-                    time.sleep(600)
+            if isinstance(reqs, list):
+                numQueries = min(len(reqs), MAX_LIMIT)
+                ind = 0
+                step = min(LIMIT_PER_COMMENT, numQueries-ind)
+                commentCurr = comment
+                while ind < numQueries:
+                    tmp = []
+                    # make a search up the limit of queries per comment or the number of queries end
+                    for i in range(ind, ind+step):
+                        req = reqs[i]
+                        print('SEARCH: Request for "' + req.strip() + '" received!')
+                        try:
+                            countryIdea = fuzzySearch(req)
+                        except KeyError as e:
+                            # PM to my account when a modifier isn't in the list
+                            # change it so the bot recognizes previous comments and doesn't spam my inbox
+                            comment.reply("u/EU4IdeaBot has encountered an error. \n" +
+                                      "An error message with the details have been forwarded to the bot maintainer")
+                            reddit.redditor('professormadlib').message('EU4IdeaBot Error', str(e))
+                            return
+                        tmp.append(format_to_comment(countryIdea))
+                    # unifies tmp items inside a single reply
+                    response = ""
+                    for i in tmp:
+                        response += i
+                        response += "\n___\n"
+                        response = comment_footer(response)
+                    try:
+                        # reply, then if there's any more countries that the user is searching for
+                        # use the bot's previous reply as the new head, forming a comment chain.
+                        commentCurr = commentCurr.reply(response)
+                    except praw.exceptions.APIException as e:
+                        print(e)
+                        print("sleep for 10 minutes")
+                        time.sleep(600)
+                    ind += step
+                    step = min(LIMIT_PER_COMMENT, numQueries - ind)
+            # finish replying to one query comment
+            print(f"finished replying to {comment.author}")
     print("finish reply")
     return
 
@@ -107,7 +108,7 @@ def fuzzySearch(name):
     max = 0
     most_likely = ""
     for ideaset in IdeaLib:
-        f = fuzz.ratio(ideaset, name)
+        f = fuzz.ratio(ideaset, name.lower())
         if f > max:
             max = f
             most_likely = ideaset
@@ -135,9 +136,7 @@ def format_to_comment(ideaSet):
     return response
 
 def comment_footer(comment):
-    comment += md.italic("This comment was made by u/EU4IdeaBot") + '\n \n'
-    comment += "Please PM u/professormadlib for any questions, as well as any tips to improve the bot. \n \n"
-    comment += md.bold("Help is always welcome!")
+    comment += md.italic("This comment was made by u/EU4IdeaBot") + '. Please PM u/professormadlib for any questions \n'
     return comment
 
 reddit = bot_login()
