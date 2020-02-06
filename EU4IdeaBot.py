@@ -37,7 +37,7 @@ def search_and_reply(reddit):
     look through the last 1000 comments for any query of national ideas: ex [[ prussia ]], then reply with the idea set
     '''
     print("SEARCH: Searching last 500 comments...")
-    for comment in reddit.subreddit("eu4gi").comments(limit=500):
+    for comment in reddit.subreddit("eu4").comments(limit=500):
         if not comment.author == "EU4IdeaBot" and \
                 is_request(comment.body) and not has_been_replied_to(str(comment.id)):
             reqs = re.findall(r"{(.*?)}", comment.body)
