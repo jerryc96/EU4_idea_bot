@@ -20,42 +20,42 @@ nameConverterDict = {
     'spy': 'espionage'
 }
 
-def gen_tag_library():
-    '''
-    Generate the list of country tags in EU4, found in common/country_tags
-    '''
-    tagMap = {}
-
-    with open(tagFile) as t:
-        data = t.readlines()
-        for line in data:
-            # check for comments
-            if '=' in line and line[0] != '#':
-                tag = line[0:3]
-                countryNameSearch = re.search('countries/(.*)\.txt', line)
-                if countryNameSearch:
-                    countryName = countryNameSearch.group(1)
-                    tagMap[tag] = countryName
-            else:
-                continue
-    return tagMap
-
-# def gen_country_library():
-#     countryMap = {}
-#     for countryPath in glob.glob(countryDirectory+'/*.txt'):
-#         # with open(countryFile, 'r', errors='ignore') as t:
-#         #     country = ClauseWizard.cwparse(t.read())
-#         #     countjson = ClauseWizard.cwformat(country)
-#         # all paths are arranged like so:
-#         # ./history/countries/{TAG} - {COUNTRY_NAME}.txt
-#         # the code below extracts the TAG and COUNTRY_NAME
-#         country = countryPath.split("/")[-1]
-#         country = country.split("-")
-#         tag = country[0].strip()
-#         countryName = country[1].strip(".txt").strip()
-#         tagMap[tag] = countryName.lower()
+# def gen_tag_library():
+#     '''
+#     Generate the list of country tags in EU4, found in common/country_tags
+#     '''
+#     tagMap = {}
 #
+#     with open(tagFile) as t:
+#         data = t.readlines()
+#         for line in data:
+#             # check for comments
+#             if '=' in line and line[0] != '#':
+#                 tag = line[0:3]
+#                 countryNameSearch = re.search('countries/(.*)\.txt', line)
+#                 if countryNameSearch:
+#                     countryName = countryNameSearch.group(1)
+#                     tagMap[tag] = countryName
+#             else:
+#                 continue
 #     return tagMap
+
+def gen_tag_library():
+    tagMap = {}
+    for countryPath in glob.glob(countryDirectory+'/*.txt'):
+        # with open(countryFile, 'r', errors='ignore') as t:
+        #     country = ClauseWizard.cwparse(t.read())
+        #     countjson = ClauseWizard.cwformat(country)
+        # all paths are arranged like so:
+        # ./history/countries/{TAG} - {COUNTRY_NAME}.txt
+        # the code below extracts the TAG and COUNTRY_NAME
+        country = countryPath.split("/")[-1]
+        country = country.split("-")
+        tag = country[0].strip()
+        countryName = country[1].strip(".txt").strip()
+        tagMap[tag] = countryName.lower()
+
+    return tagMap
 
 def gen_country_ideas_library(tagLib):
     '''
