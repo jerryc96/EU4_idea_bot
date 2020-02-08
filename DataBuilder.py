@@ -60,7 +60,9 @@ def country_to_tag_library():
         country = country.split("-")
         tag = country[0].strip()
         countryName = country[1].strip(".txt").strip()
-        library[countryName.lower()] = tag
+        countryName = countryName.lower()
+        countryName = re.sub('empire', '', countryName)
+        library[countryName.strip()] = tag
     return library
 
 def gen_tag_library():
