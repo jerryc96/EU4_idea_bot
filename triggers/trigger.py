@@ -38,7 +38,11 @@ class Trigger:
                     return False
             else:
                 if trigger == "AND":
-                    return self._evaluate_triggers(triggerDict[trigger], country)
+                    levelDown = triggerDict[trigger]
+                    for trigger, triggerVal in levelDown.items():
+                        if not self._evaluate_triggers({trigger: triggerVal}, country):
+                            return False
+                    return True
                 elif trigger == "NOT":
                     return not self._evaluate_triggers(triggerDict[trigger], country)
                 elif trigger == "OR":

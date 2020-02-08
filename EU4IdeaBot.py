@@ -42,7 +42,7 @@ def search_and_reply(reddit):
     look through the last 1000 comments for any query of national ideas: ex [[ prussia ]], then reply with the idea set
     '''
     print("SEARCH: Searching last 500 comments...")
-    for comment in reddit.subreddit("eu4").comments(limit=500):
+    for comment in reddit.subreddit(TESTING_SUB).comments(limit=500):
         if not comment.author == "EU4IdeaBot" and \
                 is_request(comment.body) and not has_been_replied_to(str(comment.id)):
             reqs = re.findall(r"{(.*?)}", comment.body)
@@ -132,6 +132,7 @@ def countrySearch(name):
     )
     # if it's closest to a country name, start trigger Search to best match the idea set for that country
     if most_likely in countryTagLib:
+        print(countryTagLib[most_likely])
         return trigger_search(countryTagLib[most_likely])
     # otherwise, it's not a country, and we can return an ideaGroup to reply.
     try:
@@ -157,11 +158,11 @@ def trigger_search(tag):
     # hit national ideas first to find a match
     for ideaName, trigger in nat_triggers.items():
         if trigger.evaluate(country):
-            return ideaGroup(ideaName, IdeaLib[ideaName])
+            return ideaGroup(ideaName.strip("_ideas"), IdeaLib[ideaName])
     # hit group idea sets next for a match
     for groupIdeaName, groupTrigger in group_triggers.items():
         if groupTrigger.evaluate(country):
-            return ideaGroup(groupIdeaName, IdeaLib[groupIdeaName])
+            return ideaGroup(groupIdeaName.strip("_ideas"), IdeaLib[groupIdeaName])
     # if nothing else hits, return generic ideas
     return nonNatIdeasLib['generic']
 
@@ -185,6 +186,8 @@ def comment_footer(comment):
 reddit = bot_login()
 
 if __name__ == '__main__':
+    # triggers = load_triggers(nationalTriggerPath)
+    # print(triggers['MAR_ideas'])
     while True:
         search_and_reply(reddit)
         print("SYSTEM: Sleeping for " + "10" + " seconds...")
