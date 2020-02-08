@@ -4,6 +4,8 @@ import praw
 import re
 from fuzzywuzzy import fuzz
 from ideaGroup.ideaGroup import ideaGroup
+from triggers.trigger import Trigger
+from country.country import Country
 import mdFormatter as md
 import os
 
@@ -12,10 +14,13 @@ MAX_LIMIT = 4
 TESTING_SUB = "testingground4bots"
 PROD_SUB = "eu4"
 
+countryTagLib = country_to_tag_library()
 tagLib = gen_tag_library()
-IdeaLib = gen_country_ideas_library(tagLib)
+IdeaLib = gen_country_ideas_library()
+nonNatIdeasLib = gen_non_national_ideas_library()
 # shortcut for IdeaLib, so the program doesn't have to make a new ideaGroup object from scratch when one already exists.
 IdeaGroupLib = {}
+
 
 def bot_login():
     """Logs the bot into reddit through praw
@@ -54,7 +59,7 @@ def search_and_reply(reddit):
                         req = reqs[i]
                         print('SEARCH: Request for "' + req.strip() + '" received!')
                         try:
-                            countryIdea = fuzzySearch(req)
+                            countryIdea = countrySearch(req)
                         except KeyError as e:
                             # PM to my account when a modifier isn't in the list
                             # change it so the bot recognizes previous comments and doesn't spam my inbox
@@ -101,25 +106,36 @@ def is_request(text):
     """
     return bool(re.search(r"[{][a-zA-Z0-9 '-+.]*[}]", text))
 
-def fuzzySearch(name):
+def countrySearch(name):
     '''
-    use fuzzy search, find the closest match to the name is looking for.
+    find the closest match to the name is looking for.
     '''
     max = 0
     most_likely = ""
-    for ideaset in IdeaLib:
+    # if the name is already a country tag, go directly to trigger based searching
+    if is_tag(name):
+        return trigger_search(name)
+    # first, use fuzzy search to match the name with any country tag
+    for country in countryTagLib:
+        f = fuzz.ratio(country, name.lower())
+        if f > max:
+            max = f
+            most_likely = country
+    # then, use fuzzy search to match the name with any group national idea, generic or basic idea groups.
+    for ideaset in nonNatIdeasLib:
         f = fuzz.ratio(ideaset, name.lower())
         if f > max:
             max = f
             most_likely = ideaset
-
     print(
         'SEARCH: Most likely: "' + most_likely + '", fuzz value = ' + str(max)
     )
-    # if most_likely in IdeaGroupLib:
-    #     return IdeaGroupLib[most_likely]
+    # if it's closest to a country name, start trigger Search to best match the idea set for that country
+    if most_likely in countryTagLib:
+        return trigger_search(countryTagLib[most_likely])
+    # otherwise, it's not a country, and we can return an ideaGroup to reply.
     try:
-        group = ideaGroup(most_likely, IdeaLib[most_likely])
+        group = ideaGroup(most_likely, nonNatIdeasLib[most_likely])
         # IdeaGroupLib[most_likely] = group
         return group
     except KeyError as e:
@@ -127,6 +143,33 @@ def fuzzySearch(name):
         # I need to patch it in, as Custom ideas doesn't catch all of them.
         reddit.redditor('professormadlib').message('EU4IdeaBot Error', str(e))
         raise
+
+def trigger_search(tag):
+    '''
+    mimic the way EU4 handles idea set triggers.
+
+    first check if the tag satisfies any national idea triggers, then group idea triggers, finally default ideas if
+    no triggers hit. Then beautify the idea name and return an IdeaGroup.
+    '''
+    country = Country(tag)
+    nat_triggers = load_triggers(nationalTriggerPath)
+    group_triggers = load_triggers(groupTriggerPath)
+    # hit national ideas first to find a match
+    for ideaName, trigger in nat_triggers.items():
+        if trigger.evaluate(country):
+            return ideaGroup(ideaName, IdeaLib[ideaName])
+    # hit group idea sets next for a match
+    for groupIdeaName, groupTrigger in group_triggers.items():
+        if groupTrigger.evaluate(country):
+            return ideaGroup(groupIdeaName, IdeaLib[groupIdeaName])
+    # if nothing else hits, return generic ideas
+    return nonNatIdeasLib['generic']
+
+def is_tag(name):
+    '''
+    check if the name is already a country tag, ie, PRU, TUR, BRA, etc.
+    '''
+    return name in tagLib
 
 def format_to_comment(ideaSet):
     '''
