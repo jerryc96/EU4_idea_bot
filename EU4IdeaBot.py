@@ -154,7 +154,6 @@ def trigger_search(tag):
     no triggers hit. Then beautify the idea name and return an IdeaGroup.
     '''
     country = tagLib[tag]
-    print(country)
     nat_triggers = load_triggers(nationalTriggerPath)
     group_triggers = load_triggers(groupTriggerPath)
     # hit national ideas first to find a match
