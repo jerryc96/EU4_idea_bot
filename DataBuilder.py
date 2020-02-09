@@ -192,4 +192,4 @@ def load_triggers(filepath):
             triggerMap[ideaName] = Trigger(trigger)
     return triggerMap
 
-store_cultures()
+# store_cultures()
