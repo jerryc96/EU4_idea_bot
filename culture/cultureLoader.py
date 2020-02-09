@@ -1,14 +1,13 @@
-import glob
-import ClauseWizard
 import json
+from utils import *
 
 # keywords seen in culture.txt, that are not related to primary cultures
-cultureKeywords = ['graphical_culture', 'male_names', 'female_names', 'dynasty_names']
+culture_keywords = ['graphical_culture', 'male_names', 'female_names', 'dynasty_names', 'primary']
 
 # a place to store the relevant sections in the game files
-cultureJson = "./data/culture.json"
+culture_json = "./data/culture.json"
 
-cultureGameFile = "./common/cultures/00_cultures.txt"
+culture_game_file = "./common/cultures/00_cultures.txt"
 
 def store_cultures():
     '''
@@ -17,24 +16,24 @@ def store_cultures():
 
     isolates and dumps cultures and their culture groups into a JSON file.
     '''
-    culturePrimaries = {}
-    with open(cultureGameFile, 'r', encoding="iso8859_1") as f:
-        parsedFile = ClauseWizard.cwparse(f.read())
-        cultureDict = ClauseWizard.cwformat(parsedFile)
+    culture_groups = {}
+    culture_tree = parse_txt_file(culture_game_file)
+    for group_name, group_data in culture_tree.items():
+        culture_groups[group_name] = []
+        for culture in group_data:
+            if culture not in culture_keywords:
+                culture_groups[group_name].append(culture)
 
-        for group_name, cultures in cultureDict.items():
-            group = []
-            for culture in cultures:
-                if culture not in cultureKeywords:
-                    group.append(culture)
-            culturePrimaries[group_name] = group
-
-    with open(cultureJson, 'w') as w:
-        json.dump(culturePrimaries, w)
+    with open(culture_json, 'w') as w:
+        json.dump(culture_groups, w)
 
 
-def culture_parser():
+def load_culture_group(group_name):
     '''
-    self made parser based on clausewizard to parse the culture file in EU4. Last resort
+    find a specific culture group from culture.json and return it
     '''
-    pass
+    with open(culture_json, 'r') as f:
+        culture_groups = json.load(f)
+        if group_name in culture_groups:
+            return culture_groups[group_name]
+        return None

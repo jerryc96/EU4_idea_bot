@@ -2,9 +2,11 @@ import re
 import glob
 import ClauseWizard
 import json
+import pyradox
 
+from utils import *
 from triggers.trigger import Trigger
-from culture.cultureLoader import *
+from country.country import Country
 
 countryDirectory = "./history/countries"
 tagFile = './common/country_tags/00_countries.txt'
@@ -20,8 +22,6 @@ genericIdeasFile = './common/ideas/zzz_default_idea.txt'
 # for Eu4 Idea Groups
 basicIdeasFile = './common/ideas/00_basic_ideas.txt'
 
-ideasTokens = './idea_tokens.txt'
-
 allTriggers = './data/triggers.json'
 nationalTriggerPath = 'data/nat_idea_triggers.json'
 groupTriggerPath = 'data/group_idea_triggers.json'
@@ -32,25 +32,6 @@ nameConverterDict = {
     'default': 'generic'
 }
 
-# def gen_tag_library():
-#     '''
-#     Generate the list of country tags in EU4, found in common/country_tags
-#     '''
-#     tagMap = {}
-#
-#     with open(tagFile) as t:
-#         data = t.readlines()
-#         for line in data:
-#             # check for comments
-#             if '=' in line and line[0] != '#':
-#                 tag = line[0:3]
-#                 countryNameSearch = re.search('countries/(.*)\.txt', line)
-#                 if countryNameSearch:
-#                     countryName = countryNameSearch.group(1)
-#                     tagMap[tag] = countryName
-#             else:
-#                 continue
-#     return tagMap
 def country_to_tag_library():
     '''
     generate a library, matching country name to tags
@@ -69,17 +50,11 @@ def country_to_tag_library():
 def gen_tag_library():
     tagMap = {}
     for countryPath in glob.glob(countryDirectory+'/*.txt'):
-        # with open(countryFile, 'r', errors='ignore') as t:
-        #     country = ClauseWizard.cwparse(t.read())
-        #     countjson = ClauseWizard.cwformat(country)
-        # all paths are arranged like so:
-        # ./history/countries/{TAG} - {COUNTRY_NAME}.txt
-        # the code below extracts the TAG and COUNTRY_NAME
+        country_tree = load_country(countryPath)
         country = countryPath.split("/")[-1]
         country = country.split("-")
         tag = country[0].strip()
-        countryName = country[1].strip(".txt").strip()
-        tagMap[tag] = countryName.lower()
+        tagMap[tag] = Country(tag, country_tree)
 
     return tagMap
 
@@ -192,4 +167,6 @@ def load_triggers(filepath):
             triggerMap[ideaName] = Trigger(trigger)
     return triggerMap
 
-# store_cultures()
+def load_country(file):
+    country_tree = parse_txt_file(file)
+    return country_tree

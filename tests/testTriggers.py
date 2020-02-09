@@ -2,11 +2,11 @@ import unittest
 from triggers.trigger import Trigger
 from country.country import Country
 
-class TestTrigger(unittest.TestCase):
+class TestBasicTrigger(unittest.TestCase):
 
-    rus = Country('RUS')
-    pru = Country('PRU')
-    bra = Country('BRA')
+    rus = Country('RUS', {})
+    pru = Country('PRU', {})
+    bra = Country('BRA', {})
 
     trigger_dict = {
         'tag': 'RUS'
@@ -52,3 +52,42 @@ class TestTrigger(unittest.TestCase):
     def test_combo_keyword(self):
         self.assertFalse(self.combo_trigger.evaluate(self.rus))
         self.assertTrue(self.combo_trigger.evaluate(self.bra))
+
+
+class TestPrimaryCultureTrigger(unittest.TestCase):
+    rus = Country('RUS', {'primary_culture': 'russian'})
+    pru = Country('PRU', {'primary_culture': 'prussian'})
+    ger = Country('GER', {})
+    sax = Country('SAX', {'primary_culture': 'prussian'})
+    rig = Country('PRU', {})
+
+    trigger_dict = {
+        'primary_culture': 'russian'
+    }
+
+    and_trigger_dict = {
+        'AND': {
+            'tag': 'PRU',
+            'primary_culture': 'prussian'
+        }
+    }
+
+    trigger = Trigger(trigger_dict)
+    and_trigger = Trigger(and_trigger_dict)
+
+    def test_match_primary_culture(self):
+        self.assertTrue(self.trigger.evaluate(self.rus))
+        self.assertFalse(self.trigger.evaluate(self.pru))
+        self.assertFalse(self.trigger.evaluate(self.ger))
+
+    def test_and_trigger(self):
+        '''
+        can only be testing with two different keywords, in this case tag and primary culture
+        '''
+        # none pass
+        self.assertFalse(self.and_trigger.evaluate(self.rus))
+        # only one passes
+        self.assertFalse(self.and_trigger.evaluate(self.sax))
+        self.assertFalse(self.and_trigger.evaluate(self.rig))
+        # both pass
+        self.assertTrue(self.and_trigger.evaluate(self.pru))

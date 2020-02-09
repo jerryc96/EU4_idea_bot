@@ -7,6 +7,7 @@ from ideaGroup.ideaGroup import ideaGroup
 from triggers.trigger import Trigger
 from country.country import Country
 import mdFormatter as md
+from culture.cultureLoader import *
 import os
 
 LIMIT_PER_COMMENT = 2
@@ -26,19 +27,12 @@ def bot_login():
     """Logs the bot into reddit through praw
     """
     print("SYSTEM: Logging in...")
-    # reddit = praw.Reddit(
-    #     client_id=os.environ["client_id"],
-    #     client_secret=os.environ["client_secret"],
-    #     password=os.environ["password"],
-    #     user_agent=os.environ["user_agent"],
-    #     username=os.environ["username"],
-    # )
     reddit = praw.Reddit(
-        client_id="7E42huWktbFK_Q",
-        client_secret="wPXrqutuI91FpY22JNsWK9mHB4Y",
-        password="Eaglemust8",
-        user_agent="reply by /u/EU4IdeaBot",
-        username="EU4IdeaBot",
+        client_id=os.environ["client_id"],
+        client_secret=os.environ["client_secret"],
+        password=os.environ["password"],
+        user_agent=os.environ["user_agent"],
+        username=os.environ["username"],
     )
     print("SYSTEM: Logged in!")
 
@@ -49,7 +43,7 @@ def search_and_reply(reddit):
     look through the last 1000 comments for any query of national ideas: ex [[ prussia ]], then reply with the idea set
     '''
     print("SEARCH: Searching last 500 comments...")
-    for comment in reddit.subreddit(TESTING_SUB).comments(limit=500):
+    for comment in reddit.subreddit(PROD_SUB).comments(limit=500):
         if not comment.author == "EU4IdeaBot" and \
                 is_request(comment.body) and not has_been_replied_to(str(comment.id)):
             reqs = re.findall(r"{(.*?)}", comment.body)
@@ -138,6 +132,7 @@ def countrySearch(name):
         'SEARCH: Most likely: "' + most_likely + '", fuzz value = ' + str(max)
     )
     # if it's closest to a country name, start trigger Search to best match the idea set for that country
+    print(most_likely)
     if most_likely in countryTagLib:
         return trigger_search(countryTagLib[most_likely])
     # otherwise, it's not a country, and we can return an ideaGroup to reply.
@@ -158,7 +153,8 @@ def trigger_search(tag):
     first check if the tag satisfies any national idea triggers, then group idea triggers, finally default ideas if
     no triggers hit. Then beautify the idea name and return an IdeaGroup.
     '''
-    country = Country(tag)
+    country = tagLib[tag]
+    print(country)
     nat_triggers = load_triggers(nationalTriggerPath)
     group_triggers = load_triggers(groupTriggerPath)
     # hit national ideas first to find a match
@@ -194,5 +190,5 @@ reddit = bot_login()
 if __name__ == '__main__':
     while True:
         search_and_reply(reddit)
-        print("SYSTEM: Sleeping for " + "10" + " seconds...")
-        time.sleep(10)
+        print("SYSTEM: Sleeping for " + "5" + " seconds...")
+        time.sleep(5)
