@@ -18,8 +18,6 @@ class ideaGroup:
         # certain ideaSets have specific triggers that allow a nation to take the set.
         # may be useful to someone else who wishes to improve the bot
         self.national_set = []
-        if 'trigger' in ideaSet:
-            self.triggers = self._find_triggers(ideaSet['trigger'])
         for key, value in ideaSet.items():
             if key not in self.keywords:
                 if key in repeatedIdeaNames:
@@ -38,17 +36,6 @@ class ideaGroup:
                         print(self.name)
                         print(err)
         self.national_set = tuple(self.national_set)
-
-    def _find_triggers(self, triggers):
-        '''
-        find the triggers that allow a country to adopt the given idea set, return array of tags that match the trigger
-        '''
-        # ideas sets with multiple tags are always under 'OR' key
-        if 'OR' in triggers:
-            return triggers['OR']['tag']
-        elif 'tag' in triggers:
-            return [triggers['tag']]
-        return []
 
     def to_comment(self):
         result = f'{md.header(self.name + " Ideas")}\n'

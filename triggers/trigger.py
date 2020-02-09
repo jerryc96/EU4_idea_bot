@@ -8,6 +8,9 @@ class Trigger:
     # each keyword calls a Trigger method, which returns a boolean value
     keywords = {
         'tag': 'is_tag',
+        # some triggers randomly have tag in all caps, I'm not sure why the game files are like this bc
+        # I never capitalize anything during parsing.
+        'TAG': 'is_tag',
         'capital_scope': 'capital_in_scope',
         'culture_group': 'is_culture_group',
         'primary_culture': 'is_primary_culture',
@@ -36,7 +39,7 @@ class Trigger:
             if trigger in self.keywords:
                 if not getattr(self, self.keywords[trigger])(triggerDict[trigger], country):
                     return False
-            else:
+            elif trigger in self.ops:
                 if trigger == "AND":
                     levelDown = triggerDict[trigger]
                     for trigger, triggerVal in levelDown.items():
@@ -51,6 +54,9 @@ class Trigger:
                         if self._evaluate_triggers({trigger: triggerVal}, country):
                             return True
                     return False
+
+            else:
+                return False
         return True
 
     def is_tag(self, triggers, country):
@@ -65,13 +71,13 @@ class Trigger:
             return country.get_tag() == triggers
 
     def capital_in_scope(self, triggers, country):
-        return True
+        return False
 
     def is_culture_group(self, triggers, country):
-        return True
+        return False
 
     def is_primary_culture(self, triggers, country):
-        return True
+        return False
 
     def is_religion_group(self, triggers, country):
-        return True
+        return False

@@ -4,6 +4,7 @@ import ClauseWizard
 import json
 
 from triggers.trigger import Trigger
+from culture.cultureLoader import *
 
 countryDirectory = "./history/countries"
 tagFile = './common/country_tags/00_countries.txt'
@@ -190,3 +191,5 @@ def load_triggers(filepath):
         for ideaName, trigger in triggerJson.items():
             triggerMap[ideaName] = Trigger(trigger)
     return triggerMap
+
+store_cultures()

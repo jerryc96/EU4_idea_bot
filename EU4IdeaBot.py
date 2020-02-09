@@ -26,12 +26,19 @@ def bot_login():
     """Logs the bot into reddit through praw
     """
     print("SYSTEM: Logging in...")
+    # reddit = praw.Reddit(
+    #     client_id=os.environ["client_id"],
+    #     client_secret=os.environ["client_secret"],
+    #     password=os.environ["password"],
+    #     user_agent=os.environ["user_agent"],
+    #     username=os.environ["username"],
+    # )
     reddit = praw.Reddit(
-        client_id=os.environ["client_id"],
-        client_secret=os.environ["client_secret"],
-        password=os.environ["password"],
-        user_agent=os.environ["user_agent"],
-        username=os.environ["username"],
+        client_id="7E42huWktbFK_Q",
+        client_secret="wPXrqutuI91FpY22JNsWK9mHB4Y",
+        password="Eaglemust8",
+        user_agent="reply by /u/EU4IdeaBot",
+        username="EU4IdeaBot",
     )
     print("SYSTEM: Logged in!")
 
@@ -42,7 +49,7 @@ def search_and_reply(reddit):
     look through the last 1000 comments for any query of national ideas: ex [[ prussia ]], then reply with the idea set
     '''
     print("SEARCH: Searching last 500 comments...")
-    for comment in reddit.subreddit(PROD_SUB).comments(limit=500):
+    for comment in reddit.subreddit(TESTING_SUB).comments(limit=500):
         if not comment.author == "EU4IdeaBot" and \
                 is_request(comment.body) and not has_been_replied_to(str(comment.id)):
             reqs = re.findall(r"{(.*?)}", comment.body)
@@ -163,7 +170,7 @@ def trigger_search(tag):
         if groupTrigger.evaluate(country):
             return ideaGroup(groupIdeaName.strip("_ideas"), IdeaLib[groupIdeaName])
     # if nothing else hits, return generic ideas
-    return nonNatIdeasLib['generic']
+    return ideaGroup('generic', nonNatIdeasLib['generic'])
 
 def is_tag(name):
     '''
