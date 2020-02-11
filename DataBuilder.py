@@ -32,22 +32,28 @@ nameConverterDict = {
     'default': 'generic'
 }
 
+english_localisation = './localisation/countries_l_english.yml'
+
+english_names = pyradox.yml.parse_file(english_localisation)
+
 def country_to_tag_library():
     '''
     generate a library, matching country name to tags
     '''
     library = {}
-    for countryPath in glob.glob(countryDirectory+'/*.txt'):
-        country = countryPath.split("/")[-1]
-        country = country.split("-")
-        tag = country[0].strip()
-        countryName = country[1].strip(".txt").strip()
-        countryName = countryName.lower()
-        countryName = re.sub('empire', '', countryName)
-        library[countryName.strip()] = tag
+    for key, name in english_names.items():
+        # all tags are of len 3 in the localisation files, so it's easy to identify
+        # pyradox turns keys to lower case, should keep them uppercase for easier reference with history
+        if len(key) == 3:
+            library[name] = key.upper()
     return library
 
 def gen_tag_library():
+    '''
+    generate tag -> country library using the histories folder, creating a country tag summarizing the country's
+    starting position
+    '''
+
     tagMap = {}
     for countryPath in glob.glob(countryDirectory+'/*.txt'):
         country_tree = load_country(countryPath)
@@ -70,7 +76,6 @@ def gen_country_ideas_library():
     add_ideas(uniqueIdeasFile, ideasLib)
     add_ideas(groupIdeasFile, ideasLib)
     add_ideas(genericIdeasFile, ideasLib)
-    # add_basic_ideas(basicIdeasFile, ideasLib)
     return ideasLib
 
 def gen_non_national_ideas_library():

@@ -15,7 +15,11 @@ class Trigger:
         'capital_scope': 'capital_in_scope',
         'culture_group': 'is_culture_group',
         'primary_culture': 'is_primary_culture',
-        'religion_group': 'is_religion_group'
+        'religion_group': 'is_religion_group',
+        'technology_group': 'is_tech_group',
+        'government': 'is_government',
+        'religion': 'is_religion',
+        'has_reform': 'has_reform'
     }
 
     def __init__(self, triggerDict):
@@ -75,7 +79,7 @@ class Trigger:
         return False
 
     def is_culture_group(self, triggers, country):
-        if country.primary_culture is None:
+        if country.get_primary_culture() is None:
             return False
         if isinstance(triggers, list):
             for culture_group in triggers:
@@ -86,7 +90,7 @@ class Trigger:
             return country.get_primary_culture() in cultures
 
     def is_primary_culture(self, triggers, country):
-        if country.primary_culture is None:
+        if country.get_primary_culture() is None:
             return False
         if isinstance(triggers, list):
             return country.get_primary_culture() in triggers
@@ -94,3 +98,32 @@ class Trigger:
 
     def is_religion_group(self, triggers, country):
         return False
+
+    def is_religion(self, triggers, country):
+        if country.get_religion() is None:
+            return False
+        if isinstance(triggers, list):
+            return country.get_religion() in triggers
+        return country.get_religion() == triggers
+
+    def is_tech_group(self, triggers, country):
+        '''
+        countries can only be in one tech group at a time
+        '''
+        return country.get_tech_group() == triggers
+
+    def is_government(self, triggers, country):
+        '''
+        countries can only have one type of government at a time
+        '''
+        return country.get_government() == triggers
+
+    def has_reform(self, triggers, country):
+        '''
+        check if a nation has a specific government reform
+        '''
+        if country.get_govt_reforms() is None:
+            return False
+        if isinstance(triggers, list):
+            return country.get_govt_reforms() in triggers
+        return country.get_govt_reforms() == triggers

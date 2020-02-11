@@ -11,3 +11,8 @@ def parse_txt_file(file):
     token_data = pyradox.txt.lex(game_string, file)
     token_tree = pyradox.txt.parse_tree(token_data, file)
     return token_tree
+
+def parse_yml_file(file):
+    '''
+    Use pyradox's parser methods to parse yml files
+    '''

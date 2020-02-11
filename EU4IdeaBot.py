@@ -187,6 +187,7 @@ def comment_footer(comment):
 reddit = bot_login()
 
 if __name__ == '__main__':
+    # print(countrySearch("ottomans"))
     while True:
         search_and_reply(reddit)
         print("SYSTEM: Sleeping for " + "5" + " seconds...")
