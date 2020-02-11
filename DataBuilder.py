@@ -32,6 +32,10 @@ nameConverterDict = {
     'default': 'generic'
 }
 
+outlier_tags = {
+    "HSA": "Lubeck"
+}
+
 english_localisation = './localisation/countries_l_english.yml'
 
 english_names = pyradox.yml.parse_file(english_localisation)
@@ -57,7 +61,10 @@ def country_to_tag_library():
         countryName = countryName.lower()
         countryName = re.sub('empire', '', countryName)
         if tag not in library:
-            library[countryName.strip()] = tag
+            if tag in outlier_tags:
+                library[outlier_tags[tag]] = tag
+            else:
+                library[countryName.strip()] = tag
     return library
 
 def gen_tag_library():
