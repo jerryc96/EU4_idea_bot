@@ -45,7 +45,7 @@ def country_to_tag_library():
         # all tags are of len 3 in the localisation files, so it's easy to identify
         # pyradox turns keys to lower case, should keep them uppercase for easier reference with history
         if len(key) == 3:
-            library[name] = key.upper()
+            library[name.lower()] = key.upper()
     return library
 
 def gen_tag_library():
