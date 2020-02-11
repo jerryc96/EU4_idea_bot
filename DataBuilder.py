@@ -46,6 +46,18 @@ def country_to_tag_library():
         # pyradox turns keys to lower case, should keep them uppercase for easier reference with history
         if len(key) == 3:
             library[name.lower()] = key.upper()
+
+    for countryPath in glob.glob(countryDirectory + '/*.txt'):
+        # some tags aren't in the localisation files, so we must use the other source of truth: history files.
+        country = countryPath.split("/")[-1]
+        country = country.split("-")
+        tag = country[0].strip()
+        countryName = country[1].strip(".txt").strip()
+        library[countryName.lower()] = tag
+        countryName = countryName.lower()
+        countryName = re.sub('empire', '', countryName)
+        if tag not in library:
+            library[countryName.strip()] = tag
     return library
 
 def gen_tag_library():
