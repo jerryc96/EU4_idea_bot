@@ -53,7 +53,15 @@ class Trigger:
                             return False
                     return True
                 elif trigger == "NOT":
-                    return not self._evaluate_triggers(triggerDict[trigger], country)
+                    # may have a list of dicts rather than a single dict.
+                    if isinstance(triggerDict[trigger], list):
+                        levelDown = triggerDict[trigger]
+                        for trigger in levelDown:
+                            if self._evaluate_triggers(trigger, country):
+                                return False
+                        return True
+                    else:
+                        return not self._evaluate_triggers(triggerDict[trigger], country)
                 elif trigger == "OR":
                     levelDown = triggerDict[trigger]
                     for trigger, triggerVal in levelDown.items():
