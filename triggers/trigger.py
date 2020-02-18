@@ -1,5 +1,6 @@
 from country.country import Country
 from culture.cultureLoader import load_culture_group
+from religion.religionLoader import load_religion_group
 
 class Trigger:
     '''
@@ -97,7 +98,15 @@ class Trigger:
         return country.get_primary_culture() == triggers
 
     def is_religion_group(self, triggers, country):
-        return False
+        if country.get_religion() is None:
+            return False
+        if isinstance(triggers, list):
+            for religion_group in triggers:
+                group = load_religion_group(religion_group)
+                return country.get_religion() in group
+        else:
+            group = load_religion_group(triggers)
+            return country.get_religion() in group
 
     def is_religion(self, triggers, country):
         if country.get_religion() is None:

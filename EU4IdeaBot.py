@@ -4,10 +4,9 @@ import praw
 import re
 from fuzzywuzzy import fuzz
 from ideaGroup.ideaGroup import ideaGroup
-from triggers.trigger import Trigger
-from country.country import Country
 import mdFormatter as md
 from culture.cultureLoader import *
+from religion.religionLoader import *
 import os
 
 LIMIT_PER_COMMENT = 2
@@ -132,7 +131,6 @@ def countrySearch(name):
         'SEARCH: Most likely: "' + most_likely + '", fuzz value = ' + str(max)
     )
     # if it's closest to a country name, start trigger Search to best match the idea set for that country
-    print(most_likely)
     if most_likely in countryTagLib:
         return trigger_search(countryTagLib[most_likely])
     # otherwise, it's not a country, and we can return an ideaGroup to reply.
@@ -159,19 +157,21 @@ def trigger_search(tag):
     # hit national ideas first to find a match
     for ideaName, trigger in nat_triggers.items():
         if trigger.evaluate(country):
-            return ideaGroup(ideaName.strip("_ideas"), IdeaLib[ideaName])
+            return ideaGroup(re.sub('_ideas', '', ideaName), IdeaLib[ideaName])
     # hit group idea sets next for a match
     for groupIdeaName, groupTrigger in group_triggers.items():
         if groupTrigger.evaluate(country):
-            return ideaGroup(groupIdeaName.strip("_ideas"), IdeaLib[groupIdeaName])
+            return ideaGroup(re.sub('_ideas', '', groupIdeaName), IdeaLib[groupIdeaName])
     # if nothing else hits, return generic ideas
     return ideaGroup('generic', nonNatIdeasLib['generic'])
+
 
 def is_tag(name):
     '''
     check if the name is already a country tag, ie, PRU, TUR, BRA, etc.
     '''
     return name in tagLib
+
 
 def format_to_comment(ideaSet):
     '''
@@ -180,6 +180,7 @@ def format_to_comment(ideaSet):
     response = ideaSet.to_comment()
     return response
 
+
 def comment_footer(comment):
     comment += md.italic("This comment was made by u/EU4IdeaBot") + '. Please PM u/professormadlib for any questions \n'
     return comment
@@ -187,7 +188,6 @@ def comment_footer(comment):
 reddit = bot_login()
 
 if __name__ == '__main__':
-    # print(countrySearch("ottomans"))
     while True:
         search_and_reply(reddit)
         print("SYSTEM: Sleeping for " + "5" + " seconds...")

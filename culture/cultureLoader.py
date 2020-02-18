@@ -16,24 +16,11 @@ def store_cultures():
 
     isolates and dumps cultures and their culture groups into a JSON file.
     '''
-    culture_groups = {}
-    culture_tree = parse_txt_file(culture_game_file)
-    for group_name, group_data in culture_tree.items():
-        culture_groups[group_name] = []
-        for culture in group_data:
-            if culture not in culture_keywords:
-                culture_groups[group_name].append(culture)
-
-    with open(culture_json, 'w') as w:
-        json.dump(culture_groups, w)
+    store_keys_in_json(culture_keywords, culture_json, culture_game_file)
 
 
 def load_culture_group(group_name):
     '''
     find a specific culture group from culture.json and return it
     '''
-    with open(culture_json, 'r') as f:
-        culture_groups = json.load(f)
-        if group_name in culture_groups:
-            return culture_groups[group_name]
-        return None
+    return load_group(group_name, culture_json)
