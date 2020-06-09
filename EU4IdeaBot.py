@@ -21,7 +21,6 @@ nonNatIdeasLib = gen_non_national_ideas_library()
 # shortcut for IdeaLib, so the program doesn't have to make a new ideaGroup object from scratch when one already exists.
 IdeaGroupLib = {}
 
-
 def bot_login():
     """Logs the bot into reddit through praw
     """
@@ -34,7 +33,6 @@ def bot_login():
         username=os.environ["username"],
     )
     print("SYSTEM: Logged in!")
-
     return reddit
 
 def search_and_reply(reddit):
@@ -42,7 +40,7 @@ def search_and_reply(reddit):
     look through the last 1000 comments for any query of national ideas: ex [[ prussia ]], then reply with the idea set
     '''
     print("SEARCH: Searching last 500 comments...")
-    for comment in reddit.subreddit(PROD_SUB).comments(limit=500):
+    for comment in reddit.subreddit(TESTING_SUB).comments(limit=500):
         if not comment.author == "EU4IdeaBot" and \
                 is_request(comment.body) and not has_been_replied_to(str(comment.id)):
             reqs = re.findall(r"{(.*?)}", comment.body)
@@ -104,7 +102,7 @@ def has_been_replied_to(request_id):
 def is_request(text):
     """Checks if text contains a valid request (entry inside braces '{ }')
     """
-    return bool(re.search(r"[{][a-zA-Z0-9 '-+.]*[}]", text))
+    return bool(re.search(r"[{][a-zA-Z0-9 '-+.]+[}]", text))
 
 def countrySearch(name):
     '''

@@ -60,5 +60,11 @@ repeatedIdeaNames = {
     },
     "merchants_of_southern_india": {
         "trade_range_modifier": "0.20"
+    },
+    "SAR_and_COR": {
+        "ae_impact": "-0.1"
+    },
+    "the_hudson_bay_company": {
+        "merchants": "1"
     }
 }

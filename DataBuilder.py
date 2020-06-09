@@ -1,6 +1,7 @@
 import re
 import glob
 import ClauseWizard
+import platform
 import json
 import pyradox
 
@@ -53,7 +54,10 @@ def country_to_tag_library():
 
     for countryPath in glob.glob(countryDirectory + '/*.txt'):
         # some tags aren't in the localisation files, so we must use the other source of truth: history files.
-        country = countryPath.split("/")[-1]
+        if platform.system() == "Windows":
+            country = countryPath.split('\\')[-1]
+        else:
+            country = countryPath.split("/")[-1]
         country = country.split("-")
         tag = country[0].strip()
         countryName = country[1].strip(".txt").strip()
@@ -76,7 +80,10 @@ def gen_tag_library():
     tagMap = {}
     for countryPath in glob.glob(countryDirectory+'/*.txt'):
         country_tree = load_country(countryPath)
-        country = countryPath.split("/")[-1]
+        if platform.system() == "Windows":
+            country = countryPath.split('\\')[-1]
+        else:
+            country = countryPath.split("/")[-1]
         country = country.split("-")
         tag = country[0].strip()
         tagMap[tag] = Country(tag, country_tree)
