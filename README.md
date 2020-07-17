@@ -1,7 +1,7 @@
 # EU4_bot
 A reddit search and reply bot for looking up national idea sets for various countries in EU4.
 
-#How it Works:
+### How it Works:
 
 The bot stores a json file containing the relevant information for each country present in EU4, and mimics EU4's own ideaset triggers to determine which country gets what ideaset based on their culture, country tag, starting religion, etc.
 
