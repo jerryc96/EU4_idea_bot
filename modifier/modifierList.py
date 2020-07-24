@@ -83,6 +83,12 @@ class ModifierList(Enum):
     imperial_authority_value = ('FloatModifier', 'Imperial Authority Modifier')
     nobles_loyalty_modifier = ('PercentModifier', 'Nobility Loyalty Equilibrium')
     burghers_loyalty_modifier = ('PercentModifier', 'Burghers Loyalty Equilibrium')
+    vaisyas_loyalty_modifier = ('PercentModifier', 'Vaisyas Loyalty Equilibrium')
+    # these two ideas have the same display text, but the first is in Religious idea group and the second is in Humanist
+    # not sure why.
+    brahmins_hindu_loyalty_modifier = ('PercentModifier', 'Brahmins Loyalty Equilibrium')
+    brahmins_muslim_loyalty_modifier = ('PercentModifier', 'Brahmins Loyalty Equilibrium')
+
     burghers_influence_modifier = ('PercentModifier', 'Burghers Influence')
     min_autonomy_in_territories = ('PercentModifier', 'Minimum Autonomy in Territories')
     max_revolutionary_zeal = ('IntegerModifier', 'Maximum Revolutionary Zeal')
