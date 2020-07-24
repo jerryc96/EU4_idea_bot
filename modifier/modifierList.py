@@ -89,6 +89,7 @@ class ModifierList(Enum):
     brahmins_hindu_loyalty_modifier = ('PercentModifier', 'Brahmins Loyalty Equilibrium')
     brahmins_muslim_loyalty_modifier = ('PercentModifier', 'Brahmins Loyalty Equilibrium')
 
+    dhimmi_loyalty_modifier = ('PercentModifier', 'Dhimmi Loyalty Equilibrium')
     burghers_influence_modifier = ('PercentModifier', 'Burghers Influence')
     min_autonomy_in_territories = ('PercentModifier', 'Minimum Autonomy in Territories')
     max_revolutionary_zeal = ('IntegerModifier', 'Maximum Revolutionary Zeal')
