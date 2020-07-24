@@ -43,7 +43,7 @@ def search_and_reply(reddit):
     for comment in reddit.subreddit(PROD_SUB).comments(limit=500):
         if not comment.author == "EU4IdeaBot" and \
                 is_request(comment.body) and not has_been_replied_to(str(comment.id)):
-            reqs = re.findall(r"{(.*?)}", comment.body)
+            reqs = re.findall(r"{{(.*?)}}", comment.body)
 
             if isinstance(reqs, list):
                 numQueries = min(len(reqs), MAX_LIMIT)
@@ -56,6 +56,9 @@ def search_and_reply(reddit):
                     for i in range(ind, ind+step):
                         req = reqs[i]
                         print('SEARCH: Request for "' + req.strip() + '" received!')
+                        # if the request is a number, redirect to Jan Mayen (Easter Egg)
+                        if req.isnumeric():
+                            req = "Jan Mayen"
                         try:
                             countryIdea = countrySearch(req)
                         except KeyError as e:
@@ -63,6 +66,7 @@ def search_and_reply(reddit):
                             # change it so the bot recognizes previous comments and doesn't spam my inbox
                             comment.reply("u/EU4IdeaBot has encountered an error. \n" +
                                       "An error message with the details have been forwarded to the bot maintainer")
+                            print(e)
                             reddit.redditor('professormadlib').message('EU4IdeaBot Error', str(e))
                             return
                         tmp.append(format_to_comment(countryIdea))
