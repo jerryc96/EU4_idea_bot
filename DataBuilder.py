@@ -2,8 +2,6 @@ import re
 import glob
 import ClauseWizard
 import platform
-import json
-import pyradox
 
 from utils import *
 from triggers.trigger import Trigger
@@ -23,7 +21,6 @@ genericIdeasFile = './common/ideas/zzz_default_idea.txt'
 # for Eu4 Idea Groups
 basicIdeasFile = './common/ideas/00_basic_ideas.txt'
 
-allTriggers = './data/triggers.json'
 nationalTriggerPath = 'data/nat_idea_triggers.json'
 groupTriggerPath = 'data/group_idea_triggers.json'
 
@@ -201,3 +198,4 @@ def load_triggers(filepath):
 def load_country(file):
     country_tree = parse_txt_file(file)
     return country_tree
+
