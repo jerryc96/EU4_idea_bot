@@ -113,7 +113,7 @@ class ModifierList(Enum):
     global_ship_trade_power = ('PercentModifier', 'Ship Trade Power')
     native_assimilation = ('PercentModifier', 'Native Assimilation')
     native_uprising_chance = ('PercentModifier', 'Native Uprising Chance')
-    reduced_liberty_desire = ('PercentModifier', 'Liberty Desire in Subjects')
+    reduced_liberty_desire = ('NegativePercentIntegerModifier', 'Liberty Desire in Subjects')
     migration_cooldown = ('PercentModifier', 'Migration Cooldown')
     envoy_travel_time = ('PercentModifier', 'Envoy Travel Time')
     province_warscore_cost = ('PercentModifier', 'Province Warscore Cost')

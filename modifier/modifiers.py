@@ -26,7 +26,7 @@ class PercentModifier(BaseModifier):
     def __str__(self):
         if not isinstance(self.effect, float):
             raise TypeError("effect must be a number")
-        elif self.effect > 0:
+        if self.effect > 0:
             return f'{self.name}: +{self.effect * 100}% \n'
         else:
             return f'{self.name}: {self.effect * 100}% \n'
@@ -41,7 +41,7 @@ class FloatModifier(BaseModifier):
     def __str__(self):
         if not isinstance(self.effect, float):
             raise TypeError("effect must be a number")
-        elif self.effect > 0:
+        if self.effect > 0:
             return f'{self.name}: +{self.effect} \n'
         else:
             return f'{self.name}: {self.effect} \n'
@@ -53,7 +53,7 @@ class IntegerModifier(BaseModifier):
     def __str__(self):
         if not isinstance(self.effect, int):
             raise TypeError("effect must be a number")
-        elif self.effect > 0:
+        if self.effect > 0:
             return f'{self.name}: +{self.effect} \n'
         else:
             return f'{self.name}: {self.effect} \n'
@@ -67,6 +67,19 @@ class BooleanModifier(BaseModifier):
     def __str__(self):
         return f'{self.name} \n'
 
+class NegativePercentIntegerModifier(BaseModifier):
+    '''
+    Class for modifiers that are displayed as a percentage, but the devs coded it in the mod files
+    as an integer instead of a decimal (10 vs 0.1), AND it's supposed to be a negative modifier (Seriously WTF Paradox)
+    '''
+    def __str__(self):
+        if not isinstance(self.effect, float):
+            raise TypeError("effect must be a number")
+        if self.effect > 0:
+            return f'{self.name}: {-self.effect}% \n'
+        else:
+            return f'{self.name}: +{-self.effect}% \n'
+
 def modifier_factory(modifierType, name, effect):
     if modifierType == 'BooleanModifier':
         return BooleanModifier(name, effect)
@@ -76,6 +89,8 @@ def modifier_factory(modifierType, name, effect):
         return PercentModifier(name, float(effect))
     elif modifierType == 'IntegerModifier':
         return IntegerModifier(name, int(effect))
+    elif modifierType == 'NegativePercentIntegerModifier':
+        return NegativePercentIntegerModifier(name, float(effect))
     raise ValueError("Not a valid modifier effect")
 
 def modifier_from_dict(idea):
